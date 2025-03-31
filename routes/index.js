@@ -34,7 +34,7 @@ router.get('/', function(req, res, next) {
   //const ecpay_payment = require('../lib/ecpay_payment.js')
 //參數值為[PLEASE MODIFY]者，請在每次測試時給予獨特值
 //若要測試非必帶參數請將base_param內註解的參數依需求取消註解 //
-  let MerchantTradeDate = new Date().toLocaleString('zh-TW',{
+  const MerchantTradeDate = new Date().toLocaleString('zh-TW',{
     year:'numeric',
     month:'2-digit',
     day:'2-digit',
@@ -53,7 +53,6 @@ router.get('/', function(req, res, next) {
   ItemName: '測試商品等',
   ReturnURL: `${HOST}/return`,
   ClientBackURL: `${HOST}/index.html`,
-  MercProfile: 'YourProfile',
   };
   const create = new ecpay_payment(options);
   const html = create.payment_client.aio_check_out_all(parameters = base_param);
@@ -66,8 +65,8 @@ router.get('/', function(req, res, next) {
     const data = {...req.body};
     delete data.CheckMacValue;
 
-    const create2 = new ecpay_payment(options);
-    const checkValue = create2.payment_client.helper.gen_chk_mac_value(data);
+    const create = new ecpay_payment(options);
+    const checkValue = create.payment_client.helper.gen_chk_mac_value(data);
     //加入HASHKEY / HASHIV的解密資料
     console.log('CheckMacValue',CheckMacValue,checkValue);
     console.log('比對',CheckMacValue === checkValue)
