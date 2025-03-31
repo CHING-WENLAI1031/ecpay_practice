@@ -5,7 +5,6 @@ require('dotenv').config();
 
 //console.log(process.env);
 const { MERCHANTID,HASHKEY,HASHIV,HOST} = process.env;
-
 const options = {
   "OperationMode": "Test", //Test or Production
   "MercProfile": {
@@ -54,6 +53,7 @@ router.get('/', function(req, res, next) {
   ItemName: '測試商品等',
   ReturnURL: `${HOST}/return`,
   ClientBackURL: `${HOST}/index.html`,
+  MercProfile: 'YourProfile',
   };
   const create = new ecpay_payment(options);
   const html = create.payment_client.aio_check_out_all(parameters = base_param);
@@ -62,6 +62,16 @@ router.get('/', function(req, res, next) {
 })
  .post('/return',function(req,res,next) {
     console.log("req.body:", req.body);
+    const {CheckMacValue} = req.body;
+    const data = {...req.body};
+    delete data.CheckMacValue;
+
+    const create2 = new ecpay_payment(options);
+    const checkValue = create2.payment_client.helper.gen_chk_mac_value(data);
+    //加入HASHKEY / HASHIV的解密資料
+    console.log('CheckMacValue',CheckMacValue,checkValue);
+    console.log('比對',CheckMacValue === checkValue)
+
     res.send('1|OK');
 });
 
